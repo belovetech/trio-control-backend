@@ -1,8 +1,4 @@
-export interface Company {
-  id?: string;
-  companyName: string;
-  numOfUsers: number;
-  numOfProducts: number;
-  percentage: string;
-  logoURL?: string;
-}
+export type FormatResponse = {
+  statusCode?: number;
+  response: Record<string, unknown>;
+};

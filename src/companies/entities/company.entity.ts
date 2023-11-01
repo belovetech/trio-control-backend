@@ -1,31 +1,23 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
+import { BaseEntity } from './base.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
-export class BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column()
-  createdAt: Date;
-
-  @Column()
-  updatedAt: Date;
-}
-
-@Entity()
+@Index(['companyName'], { unique: true })
 export class Company extends BaseEntity {
   @Column()
-  companyName: string;
+  public companyName: string;
 
   @Column()
-  numOfUsers: number;
+  public numOfUsers: number;
 
   @Column()
-  numOfProducts: number;
+  public numOfProducts: number;
 
   @Column()
-  percentage: number;
+  public percentage: string;
 
-  @Column()
-  logoURL: string;
+  @Exclude()
+  @Column({ nullable: true, default: 'avatar.jpg' })
+  public logoURL: string;
 }
