@@ -8,16 +8,17 @@ import {
   Patch,
   Logger,
   Query,
+  UploadedFile,
+  UseInterceptors,
+  ParseFilePipe,
+  FileTypeValidator,
 } from '@nestjs/common';
 
 import { CompanyService } from './company.service';
 import { formatResponse } from 'src/common/utils/formatResponse';
 
-import {
-  CreateCompanyDto,
-  UpdateCompanyDto,
-  UploadCompanyLogoDto,
-} from './dtos';
+import { CreateCompanyDto, UpdateCompanyDto } from './dtos';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('companies')
 export class CompanyController {
@@ -120,14 +121,41 @@ export class CompanyController {
     }
   }
 
-  @Patch(':id/upload')
-  async upload(@Param('id') id: string, @Body() data: UploadCompanyLogoDto) {
-    try {
-      const company = await this.companyService.upload(id, data?.logoURL);
+  // @Patch(':id/upload')
+  // async upload(@Param('id') id: string, @Body() data: UploadCompanyLogoDto) {
+  //   try {
+  //     const company = await this.companyService.upload(id, data?.logoURL);
 
+  //     return formatResponse(200, {
+  //       message: "Upload company's logo successfully",
+  //       company,
+  //     });
+  //   } catch (error) {
+  //     this.logger.error("Unable to upload company's logo", error);
+
+  //     return formatResponse(error.status ?? 400, {
+  //       message: "Unable to upload company's logo",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
+
+  @Post(':id/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Param('id') id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    try {
+      await this.companyService.upload(id, file);
       return formatResponse(200, {
         message: "Upload company's logo successfully",
-        company,
+        file,
       });
     } catch (error) {
       this.logger.error("Unable to upload company's logo", error);

@@ -15,6 +15,6 @@ async function bootstrap() {
 
   app.use(new ErrorMiddleware().use);
   await app.listen(3000);
-  console.info('Server running at ', await app.getUrl());
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

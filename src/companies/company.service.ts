@@ -1,7 +1,10 @@
+import * as fs from 'fs';
+
 import {
   ConflictException,
   Injectable,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,6 +14,7 @@ import { CreateCompanyDto, UpdateCompanyDto } from './dtos';
 
 @Injectable()
 export class CompanyService {
+  private logger: Logger = new Logger(CompanyService.name);
   constructor(
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
@@ -80,15 +84,34 @@ export class CompanyService {
     return company;
   }
 
-  async upload(id: string, logoURL: string) {
+  async upload(id: string, file: Express.Multer.File) {
     const company = await this.companyRepository.findOneBy({ id });
 
     if (!company) {
       throw new NotFoundException('Company not found');
     }
-    await this.companyRepository.update(id, { logoURL });
 
-    return { ...company, logoURL };
+    const [filePath, originalName] = company.logoURL.split('-');
+    if (originalName === file.originalname) {
+      throw new ConflictException('The file has already been uploaded');
+    }
+
+    this.removeFile(filePath); //remove the previous file saved in upload folder
+
+    const filePathAndOriginalName = `${file.path}-${file.originalname}`;
+    await this.companyRepository.update(id, {
+      logoURL: filePathAndOriginalName,
+    });
+
+    return { ...company, logoURL: file.path };
+  }
+
+  private removeFile(path: string) {
+    fs.unlink(path, (err) => {
+      if (err) {
+        this.logger.error('Unable to delete the file');
+      }
+    });
   }
 
   private calculatePercentage(users: number, products: number): string {

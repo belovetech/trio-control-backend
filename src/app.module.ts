@@ -4,6 +4,7 @@ import { CompanyService } from './companies/company.service';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/database/configuration';
 import { DatabaseModule } from './config/database/database.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -14,6 +15,12 @@ import { DatabaseModule } from './config/database/database.module';
     }),
 
     ...DatabaseModule.getForRootAsync(),
+
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: './uploads',
+      }),
+    }),
   ],
   controllers: [CompanyController],
   providers: [CompanyService],
