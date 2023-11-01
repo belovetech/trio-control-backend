@@ -15,10 +15,13 @@ import {
 } from '@nestjs/common';
 
 import { CompanyService } from './company.service';
-import { formatResponse } from 'src/common/utils/formatResponse';
+import { formatResponse } from '../common/utils/formatResponse';
 
 import { CreateCompanyDto, UpdateCompanyDto } from './dtos';
 import { FileInterceptor } from '@nestjs/platform-express';
+
+import { Roles } from '../auth/decorators/role.decorator';
+import { Role } from '../auth/enums/role.enum';
 
 @Controller('companies')
 export class CompanyController {
@@ -64,6 +67,7 @@ export class CompanyController {
   }
 
   @Get()
+  @Roles(Role.Admin)
   async getCompanies(@Query() query: Partial<CreateCompanyDto>) {
     try {
       const companies = await this.companyService.getCompanies(query);
@@ -121,27 +125,9 @@ export class CompanyController {
     }
   }
 
-  // @Patch(':id/upload')
-  // async upload(@Param('id') id: string, @Body() data: UploadCompanyLogoDto) {
-  //   try {
-  //     const company = await this.companyService.upload(id, data?.logoURL);
-
-  //     return formatResponse(200, {
-  //       message: "Upload company's logo successfully",
-  //       company,
-  //     });
-  //   } catch (error) {
-  //     this.logger.error("Unable to upload company's logo", error);
-
-  //     return formatResponse(error.status ?? 400, {
-  //       message: "Unable to upload company's logo",
-  //       error: error.message,
-  //     });
-  //   }
-  // }
-
   @Post(':id/upload')
   @UseInterceptors(FileInterceptor('file'))
+  @Roles(Role.Admin)
   async uploadFile(
     @Param('id') id: string,
     @UploadedFile(

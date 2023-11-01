@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ErrorMiddleware } from './common/middlewares/error.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +12,6 @@ async function bootstrap() {
     }),
   );
 
-  app.use(new ErrorMiddleware().use);
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
