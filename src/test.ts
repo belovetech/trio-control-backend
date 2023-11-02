@@ -13,8 +13,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Initialize Firebase
-const email = 'userb@gmail.com';
-const password = 'P@ssword234';
+const email = 'userc@gmail.com';
+const password = 'P@ssword345';
 
 const auth = getAuth();
 

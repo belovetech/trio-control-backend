@@ -91,17 +91,11 @@ export class CompanyService {
       throw new NotFoundException('Company not found');
     }
 
-    const [filePath, originalName] = company.logoURL.split('-');
-    if (originalName === file.originalname) {
-      throw new ConflictException('The file has already been uploaded');
-    }
-
-    this.removeFile(filePath); //remove the previous file saved in upload folder
-
-    const filePathAndOriginalName = `${file.path}-${file.originalname}`;
     await this.companyRepository.update(id, {
-      logoURL: filePathAndOriginalName,
+      logoURL: file.filename,
     });
+
+    console.log(file);
 
     return { ...company, logoURL: file.path };
   }

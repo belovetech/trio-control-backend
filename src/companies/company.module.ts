@@ -10,4 +10,4 @@ import { DatabaseModule } from '../config/database/database.module';
   providers: [CompanyService],
   controllers: [CompanyController],
 })
-export class UsersModule {}
+export class CompanyModule {}

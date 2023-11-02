@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   ParseFilePipe,
   FileTypeValidator,
+  Request,
 } from '@nestjs/common';
 
 import { CompanyService } from './company.service';
@@ -130,6 +131,7 @@ export class CompanyController {
   @Roles(Role.Admin)
   async uploadFile(
     @Param('id') id: string,
+    @Request() req,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
@@ -141,7 +143,7 @@ export class CompanyController {
       await this.companyService.upload(id, file);
       return formatResponse(200, {
         message: "Upload company's logo successfully",
-        file,
+        file: req.host + '/uploads/' + file.filename,
       });
     } catch (error) {
       this.logger.error("Unable to upload company's logo", error);
