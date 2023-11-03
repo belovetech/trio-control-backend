@@ -5,7 +5,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Company } from '../companies/entities';
-import { File } from './files.interface';
+import { FileResponse } from './files.interface';
 
 @Injectable()
 export class FilesService {
@@ -14,7 +14,7 @@ export class FilesService {
     private companyRepository: Repository<Company>,
   ) {}
 
-  async upload(id: string, file: Express.Multer.File): Promise<File> {
+  async upload(id: string, file: Express.Multer.File): Promise<FileResponse> {
     const company = await this.companyRepository.findOneBy({ id });
 
     if (!company) {
@@ -34,7 +34,11 @@ export class FilesService {
       company_logo: file.path,
     });
 
-    return { message: 'File uploaded successfully!', filePath: file.path };
+    return {
+      message: 'File uploaded successfully!',
+      filePath: file.path,
+      filename: file.filename,
+    };
   }
 
   private removeFile(path: string) {

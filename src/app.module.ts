@@ -9,6 +9,8 @@ import { FirebaseAuthGuard } from './auth/firebase/guards/firebase-auth.guard';
 import { RolesGuard } from './auth/firebase/guards/roles.guard';
 import { FilesService } from './files/files.service';
 import { FilesController } from './files/files.controller';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -16,6 +18,11 @@ import { FilesController } from './files/files.controller';
       isGlobal: true,
       load: [configuration],
       cache: true,
+    }),
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      exclude: ['/api/(.*)'],
     }),
 
     ...DatabaseModule.getForRootAsync(),

@@ -25,7 +25,7 @@ const storage = diskStorage({
     const extension = extname(file.originalname);
     const randomName = uuid4();
 
-    cb(null, `${name}-${randomName}.${extension}`);
+    cb(null, `${name}-${randomName}${extension}`);
   },
 });
 
