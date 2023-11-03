@@ -6,7 +6,6 @@ import {
   Post,
   Param,
   ParseFilePipe,
-  Request,
 } from '@nestjs/common';
 
 import { diskStorage } from 'multer';
@@ -39,7 +38,6 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file', { storage }))
   async uploadFile(
     @Param('id') id: string,
-    @Request() req,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],

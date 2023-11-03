@@ -108,19 +108,9 @@ export class CompanyController {
   }
 
   @Patch(':id')
-  async updateCompany(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() data: UpdateCompanyDto,
-  ) {
+  async updateCompany(@Param('id') id: string, @Body() data: UpdateCompanyDto) {
     try {
-      const { firebaseUser } = req.user;
-
-      const company = await this.companyService.updateCompany(
-        id,
-        firebaseUser.uid,
-        data,
-      );
+      const company = await this.companyService.updateCompany(id, data);
 
       return formatResponse(200, {
         message: 'Update Company successfully',
@@ -137,18 +127,13 @@ export class CompanyController {
   }
 
   @Delete(':id')
+  @Roles(Role.Admin)
   async deleteCompany(@Request() req, @Param('id') id: string) {
     try {
-      const { firebaseUser } = req.user;
-
-      const company = await this.companyService.deleteCompany(
-        id,
-        firebaseUser.uid,
-      );
+      await this.companyService.deleteCompany(id);
 
       return formatResponse(200, {
         message: 'Delete Company successfully',
-        company,
       });
     } catch (error) {
       this.logger.error('Unable to delete company', error);

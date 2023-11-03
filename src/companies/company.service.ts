@@ -2,7 +2,6 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 
 import { ConfigService } from '@nestjs/config';
@@ -75,20 +74,10 @@ export class CompanyService {
     return company;
   }
 
-  async updateCompany(
-    id: string,
-    user_id: string,
-    data: UpdateCompanyDto,
-  ): Promise<Company> {
+  async updateCompany(id: string, data: UpdateCompanyDto): Promise<Company> {
     const { company_name, total_products, total_users } = data;
 
     const company = await this.companyRepository.findOneBy({ id });
-
-    if (!this.isAllowed(user_id, company)) {
-      throw new UnauthorizedException(
-        'You are not allowed to update this company',
-      );
-    }
 
     let percentage;
     if (total_users || total_products) {
@@ -108,19 +97,12 @@ export class CompanyService {
     return { ...company, ...data, percentage };
   }
 
-  async deleteCompany(id: string, user_id: string): Promise<Company> {
-    const company = await this.companyRepository.findOneBy({ id });
+  async deleteCompany(id: string) {
+    const { affected } = await this.companyRepository.delete(id);
 
-    if (!this.isAdmin(user_id)) {
-      throw new UnauthorizedException('You are not allowed to delete company');
+    if (affected === 0) {
+      throw new NotFoundException('Company not found');
     }
-
-    if (!company) {
-      throw new NotFoundException('Company  not found');
-    }
-
-    await this.companyRepository.delete(id);
-    return company;
   }
 
   private calculatePercentage(
@@ -136,9 +118,5 @@ export class CompanyService {
 
   private isAdmin(user_id: string): boolean {
     return this.configService.get('ADMIN_UID') === user_id;
-  }
-
-  private isAllowed(user_id: string, company: Company): boolean {
-    return company && company.user_id === user_id;
   }
 }
