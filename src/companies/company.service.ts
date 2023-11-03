@@ -1,11 +1,12 @@
-import * as fs from 'fs';
-
 import {
   ConflictException,
   Injectable,
   NotFoundException,
-  Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
+
+import { ConfigService } from '@nestjs/config';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -14,35 +15,55 @@ import { CreateCompanyDto, UpdateCompanyDto } from './dtos';
 
 @Injectable()
 export class CompanyService {
-  private logger: Logger = new Logger(CompanyService.name);
   constructor(
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
+    private configService: ConfigService,
   ) {}
 
-  async createCompany(data: CreateCompanyDto): Promise<Company> {
+  async createCompany(
+    user_id: string,
+    data: CreateCompanyDto,
+  ): Promise<Company> {
+    const { company_name, total_products, total_users } = data;
+
     const companyExists = await this.companyRepository.findOne({
-      where: { companyName: data.companyName },
+      where: { user_id },
     });
 
     if (companyExists) {
-      throw new ConflictException('Company already exist');
+      throw new ConflictException('User already created a company');
     }
 
-    const { numOfUsers, numOfProducts } = data;
     const company = this.companyRepository.create({
-      ...data,
-      percentage: this.calculatePercentage(numOfUsers, numOfProducts),
+      company_name,
+      total_users,
+      total_products,
+      user_id,
+      percentage: this.calculatePercentage(total_products, total_users),
+      isAdmin: this.isAdmin(user_id),
     });
 
     return this.companyRepository.save(company);
   }
 
-  async getCompanyById(id: string): Promise<Company> {
-    const company = await this.companyRepository.findOneBy({ id });
+  async getMyCompany(user_id: string): Promise<Company> {
+    const company = await this.companyRepository.findOneBy({ user_id });
+
     if (!company) {
       throw new NotFoundException('Company not found');
     }
+
+    return company;
+  }
+
+  async getCompanyById(id: string): Promise<Company> {
+    const company = await this.companyRepository.findOneBy({ id });
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
     return company;
   }
 
@@ -50,66 +71,74 @@ export class CompanyService {
     const company = await this.companyRepository.find({
       where: filter,
     });
+
     return company;
   }
 
-  async updateCompany(id: string, data: UpdateCompanyDto): Promise<Company> {
+  async updateCompany(
+    id: string,
+    user_id: string,
+    data: UpdateCompanyDto,
+  ): Promise<Company> {
+    const { company_name, total_products, total_users } = data;
+
     const company = await this.companyRepository.findOneBy({ id });
-    if (!company) {
-      throw new NotFoundException('Company  not found');
+
+    if (!this.isAllowed(user_id, company)) {
+      throw new UnauthorizedException(
+        'You are not allowed to update this company',
+      );
     }
 
     let percentage;
-    if (data.numOfUsers || data.numOfProducts) {
+    if (total_users || total_products) {
       percentage = this.calculatePercentage(
-        data.numOfUsers ?? company.numOfUsers,
-        data.numOfProducts ?? company.numOfProducts,
+        total_products ?? company.total_products,
+        total_users ?? company.total_users,
       );
     }
 
     await this.companyRepository.update(id, {
-      ...data,
+      company_name,
+      total_products,
+      total_users,
       percentage: percentage,
     });
 
     return { ...company, ...data, percentage };
   }
 
-  async deleteCompany(id: string): Promise<Company> {
+  async deleteCompany(id: string, user_id: string): Promise<Company> {
     const company = await this.companyRepository.findOneBy({ id });
+
+    if (!this.isAdmin(user_id)) {
+      throw new UnauthorizedException('You are not allowed to delete company');
+    }
+
     if (!company) {
       throw new NotFoundException('Company  not found');
     }
+
     await this.companyRepository.delete(id);
     return company;
   }
 
-  async upload(id: string, file: Express.Multer.File) {
-    const company = await this.companyRepository.findOneBy({ id });
+  private calculatePercentage(
+    totalProducts: number,
+    totalusers: number,
+  ): string {
+    if (totalusers === 0) return '0%';
 
-    if (!company) {
-      throw new NotFoundException('Company not found');
-    }
+    const percentage = Math.round((totalProducts / totalusers) * 100);
 
-    await this.companyRepository.update(id, {
-      logoURL: file.filename,
-    });
-
-    console.log(file);
-
-    return { ...company, logoURL: file.path };
+    return `${Math.abs(percentage)}%`;
   }
 
-  private removeFile(path: string) {
-    fs.unlink(path, (err) => {
-      if (err) {
-        this.logger.error('Unable to delete the file');
-      }
-    });
+  private isAdmin(user_id: string): boolean {
+    return this.configService.get('ADMIN_UID') === user_id;
   }
 
-  private calculatePercentage(users: number, products: number): string {
-    const percentage = Math.floor(products / users);
-    return `${percentage}%`;
+  private isAllowed(user_id: string, company: Company): boolean {
+    return company && company.user_id === user_id;
   }
 }

@@ -6,14 +6,14 @@ import { ExceptionsLoggerFilter } from './common/exceptions/exceptionsLogger.fil
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalFilters(new ExceptionsLoggerFilter());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
     }),
   );
-
-  app.useGlobalFilters(new ExceptionsLoggerFilter());
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);

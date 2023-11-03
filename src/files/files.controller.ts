@@ -1,30 +1,30 @@
 import {
   Controller,
-  Post,
+  FileTypeValidator,
   UploadedFile,
   UseInterceptors,
+  Post,
+  Param,
+  ParseFilePipe,
+  Request,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+
 import { diskStorage } from 'multer';
-import path, { extname } from 'path';
-import { existsSync, mkdirSync } from 'fs';
-import { uuid as uuidv4 } from 'uuid';
+import { extname } from 'path';
+import { v4 as uuid4 } from 'uuid';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+import { FilesService } from './files.service';
+
+import { Roles } from '../auth/decorators/role.decorator';
+import { Role } from '../auth/enums/role.enum';
 
 const storage = diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(process.cwd(), '/uploads');
-
-    if (!existsSync(uploadPath)) {
-      mkdirSync(uploadPath);
-    }
-    cb(null, uploadPath);
-  },
-
-  // filename-uidv4.ext
+  destination: './uploads',
   filename: (req, file, cb) => {
     const name = file.originalname.split('.')[0];
     const extension = extname(file.originalname);
-    const randomName = uuidv4();
+    const randomName = uuid4();
 
     cb(null, `${name}-${randomName}.${extension}`);
   },
@@ -32,10 +32,21 @@ const storage = diskStorage({
 
 @Controller('files')
 export class FilesController {
-  @Post('upload')
+  constructor(private readonly filesService: FilesService) {}
+
+  @Post(':id/upload')
+  @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file', { storage }))
-  uploadFile(@UploadedFile() file) {
-    console.log(file);
-    return { message: 'File uploaded successfully!', filename: file.filename };
+  async uploadFile(
+    @Param('id') id: string,
+    @Request() req,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return await this.filesService.upload(id, file);
   }
 }

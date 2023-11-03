@@ -2,22 +2,28 @@ import { Entity, Column, Index } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
-@Index(['companyName'], { unique: true })
-export class Company extends BaseEntity {
+@Entity('companies')
+@Index(['user_id'], { unique: true })
+export abstract class Company extends BaseEntity {
   @Column()
-  public companyName: string;
+  public company_name: string;
 
   @Column()
-  public numOfUsers: number;
+  public total_users: number;
 
   @Column()
-  public numOfProducts: number;
+  public total_products: number;
 
   @Column()
   public percentage: string;
 
+  @Column()
+  public user_id: string;
+
   @Exclude()
   @Column({ nullable: true, default: 'avatar.jpg' })
-  public logoURL: string;
+  public company_logo: string;
+
+  @Column({ default: false })
+  isAdmin: boolean;
 }

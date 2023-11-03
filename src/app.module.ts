@@ -7,7 +7,8 @@ import { DatabaseModule } from './config/database/database.module';
 import { FirebaseAuthStrategy } from './auth/firebase/firebase-auth.strategy';
 import { FirebaseAuthGuard } from './auth/firebase/guards/firebase-auth.guard';
 import { RolesGuard } from './auth/firebase/guards/roles.guard';
-import { FilesModule } from './files/files.module';
+import { FilesService } from './files/files.service';
+import { FilesController } from './files/files.controller';
 
 @Module({
   imports: [
@@ -17,12 +18,11 @@ import { FilesModule } from './files/files.module';
       cache: true,
     }),
 
-    FilesModule,
-
     ...DatabaseModule.getForRootAsync(),
   ],
-  controllers: [CompanyController],
+  controllers: [CompanyController, FilesController],
   providers: [
+    FilesService,
     CompanyService,
     FirebaseAuthStrategy,
 

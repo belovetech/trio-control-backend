@@ -12,25 +12,45 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-// Initialize Firebase
-const email = 'userc@gmail.com';
-const password = 'P@ssword345';
+type Credential = {
+  email: string;
+  password: string;
+};
+
+const credentials: Credential[] = [
+  {
+    email: 'usera@gmail.com',
+    password: 'P@ssword123',
+  },
+
+  {
+    email: 'userb@gmail.com',
+    password: 'P@ssword234',
+  },
+
+  {
+    email: 'userc@gmail.com',
+    password: 'P@ssword345',
+  },
+];
 
 const auth = getAuth();
 
-(async function signin() {
+(async function signin(credentials: Credential[]) {
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
+    for (const credential of credentials) {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        credential.email,
+        credential.password,
+      );
 
-    const user = userCredential.user;
-    console.log(await user.getIdToken());
+      const user = userCredential.user;
+      console.log(await user.getIdToken());
+    }
   } catch (error) {
     const errorCode = error.code;
     const errorMessage = error.message;
     console.log(errorCode, errorMessage);
   }
-})();
+})(credentials);

@@ -5,20 +5,20 @@ export class UpdateCompanyDto {
   @IsOptional()
   @ApiProperty({ example: 'my company' })
   @IsString()
-  public companyName: string;
+  public company_name: string;
 
   @IsOptional()
   @ApiProperty({ example: 20 })
   @IsNumber()
-  public numOfUsers: number;
+  public total_users: number;
 
   @IsOptional()
   @ApiProperty({ example: 5 })
   @IsNumber()
-  public numOfProducts: number;
+  public total_products: number;
 
   @IsOptional()
   @ApiProperty({ example: '/src/public/images/my-photo.jpg' })
   @IsString()
-  public logoURL: string;
+  public company_logo: string;
 }

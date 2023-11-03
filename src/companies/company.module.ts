@@ -6,7 +6,7 @@ import { DatabaseModule } from '../config/database/database.module';
 
 @Module({
   imports: [DatabaseModule, LoggerModule],
-  exports: [CompanyController],
+  exports: [CompanyService],
   providers: [CompanyService],
   controllers: [CompanyController],
 })

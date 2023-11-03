@@ -14,6 +14,7 @@ export class DatabaseModule {
     let connectionOptions: TypeOrmModuleOptions = {
       type: 'postgres',
       synchronize: true,
+      entities: [Company],
     };
 
     if (node_env === 'development') {

@@ -8,18 +8,12 @@ import {
   Patch,
   Logger,
   Query,
-  UploadedFile,
-  UseInterceptors,
-  ParseFilePipe,
-  FileTypeValidator,
   Request,
 } from '@nestjs/common';
 
 import { CompanyService } from './company.service';
-import { formatResponse } from '../common/utils/formatResponse';
-
 import { CreateCompanyDto, UpdateCompanyDto } from './dtos';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { formatResponse } from '../common/utils/formatResponse';
 
 import { Roles } from '../auth/decorators/role.decorator';
 import { Role } from '../auth/enums/role.enum';
@@ -30,9 +24,14 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
-  async createCompany(@Body() data: CreateCompanyDto) {
+  async createCompany(@Request() req, @Body() data: CreateCompanyDto) {
     try {
-      const company = await this.companyService.createCompany(data);
+      const { firebaseUser } = req.user;
+
+      const company = await this.companyService.createCompany(
+        firebaseUser.uid,
+        data,
+      );
 
       return formatResponse(201, {
         message: 'Create company  successfully',
@@ -48,8 +47,28 @@ export class CompanyController {
     }
   }
 
+  @Get('me')
+  async getMyCompany(@Request() req) {
+    try {
+      const { firebaseUser } = req.user;
+      const company = await this.companyService.getMyCompany(firebaseUser.uid);
+
+      return formatResponse(200, {
+        message: 'Fetch Company successfully',
+        company,
+      });
+    } catch (error) {
+      this.logger.error('Unable to fetch Company', error);
+
+      return formatResponse(error.status ?? 400, {
+        message: 'Unable to fetch Company',
+        error: error.message,
+      });
+    }
+  }
+
   @Get(':id')
-  async getCompanyById(@Param('id') id: string) {
+  async getCompanyById(@Request() req, @Param('id') id: string) {
     try {
       const company = await this.companyService.getCompanyById(id);
 
@@ -89,9 +108,19 @@ export class CompanyController {
   }
 
   @Patch(':id')
-  async updateCompany(@Param('id') id: string, @Body() data: UpdateCompanyDto) {
+  async updateCompany(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() data: UpdateCompanyDto,
+  ) {
     try {
-      const company = await this.companyService.updateCompany(id, data);
+      const { firebaseUser } = req.user;
+
+      const company = await this.companyService.updateCompany(
+        id,
+        firebaseUser.uid,
+        data,
+      );
 
       return formatResponse(200, {
         message: 'Update Company successfully',
@@ -108,9 +137,14 @@ export class CompanyController {
   }
 
   @Delete(':id')
-  async deleteCompany(@Param('id') id: string) {
+  async deleteCompany(@Request() req, @Param('id') id: string) {
     try {
-      const company = await this.companyService.deleteCompany(id);
+      const { firebaseUser } = req.user;
+
+      const company = await this.companyService.deleteCompany(
+        id,
+        firebaseUser.uid,
+      );
 
       return formatResponse(200, {
         message: 'Delete Company successfully',
@@ -121,35 +155,6 @@ export class CompanyController {
 
       return formatResponse(error.status ?? 400, {
         message: 'Unable to delete company',
-        error: error.message,
-      });
-    }
-  }
-
-  @Post(':id/upload')
-  @UseInterceptors(FileInterceptor('file'))
-  @Roles(Role.Admin)
-  async uploadFile(
-    @Param('id') id: string,
-    @Request() req,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
-      }),
-    )
-    file: Express.Multer.File,
-  ) {
-    try {
-      await this.companyService.upload(id, file);
-      return formatResponse(200, {
-        message: "Upload company's logo successfully",
-        file: req.host + '/uploads/' + file.filename,
-      });
-    } catch (error) {
-      this.logger.error("Unable to upload company's logo", error);
-
-      return formatResponse(error.status ?? 400, {
-        message: "Unable to upload company's logo",
         error: error.message,
       });
     }
