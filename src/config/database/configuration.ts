@@ -1,6 +1,6 @@
 export default () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
-  node: process.env.NODE_ENV || 'development',
+  node_env: process.env.NODE_ENV || 'development',
   databaseConfig: {
     common: {
       database: process.env.DEV_DATABASE_NAME,

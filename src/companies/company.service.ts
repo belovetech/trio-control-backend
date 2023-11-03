@@ -27,11 +27,11 @@ export class CompanyService {
     const { company_name, total_products, total_users } = data;
 
     const companyExists = await this.companyRepository.findOne({
-      where: { user_id },
+      where: { user_id, company_name },
     });
 
     if (companyExists) {
-      throw new ConflictException('User already created a company');
+      throw new ConflictException('Company already exists');
     }
 
     const company = this.companyRepository.create({
@@ -110,14 +110,18 @@ export class CompanyService {
     totalProducts: number,
     totalusers: number,
   ): string {
-    if (totalusers === 0) return '0%';
+    if (+totalusers === 0) return '0%';
 
-    const percentage = Math.round((totalProducts / totalusers) * 100);
+    const percentage = Math.round((+totalProducts / +totalusers) * 100);
 
     return `${percentage}%`;
   }
 
   private isAdmin(user_id: string): boolean {
     return this.configService.get('ADMIN_UID') === user_id;
+  }
+
+  private transformtoInteger(value: string): number {
+    return parseInt(value, 10);
   }
 }

@@ -3,7 +3,7 @@ import { BaseEntity } from './base.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('companies')
-@Index(['user_id'], { unique: true })
+@Index(['company_name'], { unique: true })
 export abstract class Company extends BaseEntity {
   @Column()
   public company_name: string;

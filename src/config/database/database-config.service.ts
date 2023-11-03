@@ -6,8 +6,9 @@ import { Company } from 'src/companies/entities/company.entity';
 @Injectable()
 export class DatabaseConfigService {
   static getDatabaseConfig(configService: ConfigService): TypeOrmModuleOptions {
-    const nodeEnv = configService.get('NODE_ENV');
+    const nodeEnv = configService.get('node_env');
     const databaseConfig = configService.get('databaseConfig');
+    console.log(nodeEnv);
 
     const commonOptions: TypeOrmModuleOptions = {
       type: 'postgres',
@@ -18,7 +19,6 @@ export class DatabaseConfigService {
       ...commonOptions,
       ...databaseConfig.common,
     };
-
     if (nodeEnv === 'development') {
       connectionOptions = {
         ...connectionOptions,
