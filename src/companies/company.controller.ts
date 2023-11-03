@@ -68,7 +68,7 @@ export class CompanyController {
   }
 
   @Get(':id')
-  async getCompanyById(@Request() req, @Param('id') id: string) {
+  async getCompanyById(@Param('id') id: string) {
     try {
       const company = await this.companyService.getCompanyById(id);
 
@@ -128,7 +128,7 @@ export class CompanyController {
 
   @Delete(':id')
   @Roles(Role.Admin)
-  async deleteCompany(@Request() req, @Param('id') id: string) {
+  async deleteCompany(@Param('id') id: string) {
     try {
       await this.companyService.deleteCompany(id);
 
