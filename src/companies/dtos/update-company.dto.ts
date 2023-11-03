@@ -16,9 +16,4 @@ export class UpdateCompanyDto {
   @ApiProperty({ example: 5 })
   @IsNumber()
   public total_products: number;
-
-  @IsOptional()
-  @ApiProperty({ example: '/src/public/images/my-photo.jpg' })
-  @IsString()
-  public company_logo: string;
 }
