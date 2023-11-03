@@ -31,7 +31,7 @@ export class FilesService {
     }
 
     await this.companyRepository.update(id, {
-      company_logo: file.path,
+      company_logo: file.filename,
     });
 
     return {

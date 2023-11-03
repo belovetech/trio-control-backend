@@ -103,6 +103,7 @@ export class CompanyService {
     if (affected === 0) {
       throw new NotFoundException('Company not found');
     }
+    return { message: 'Company deleted successfully' };
   }
 
   private calculatePercentage(

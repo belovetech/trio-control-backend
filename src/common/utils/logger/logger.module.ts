@@ -5,7 +5,7 @@ import { LoggerModule as AppLoggerModule } from 'nestjs-pino';
   imports: [
     AppLoggerModule.forRoot({
       pinoHttp: {
-        customProps: (req, res) => ({
+        customProps: () => ({
           context: 'HTTP',
         }),
         transport: {

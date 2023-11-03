@@ -14,9 +14,9 @@ export class BaseEntity {
 
   @Exclude()
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @Exclude()
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }
