@@ -5,7 +5,6 @@ import { DatabaseModule } from '../config/database/database.module';
 
 @Module({
   imports: [DatabaseModule],
-  exports: [FilesService],
   providers: [FilesService],
   controllers: [FilesController],
 })

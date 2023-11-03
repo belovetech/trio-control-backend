@@ -25,7 +25,7 @@ import { join } from 'path';
       exclude: ['/api/(.*)'],
     }),
 
-    ...DatabaseModule.getForRootAsync(),
+    ...DatabaseModule.init(),
   ],
   controllers: [CompanyController, FilesController],
   providers: [

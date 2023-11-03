@@ -114,7 +114,7 @@ export class CompanyService {
 
     const percentage = Math.round((totalProducts / totalusers) * 100);
 
-    return `${Math.abs(percentage)}%`;
+    return `${percentage}%`;
   }
 
   private isAdmin(user_id: string): boolean {

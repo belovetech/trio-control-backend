@@ -1,20 +1,21 @@
 export default () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
   node: process.env.NODE_ENV || 'development',
-  database: {
+  databaseConfig: {
+    common: {
+      database: process.env.DEV_DATABASE_NAME,
+    },
     development: {
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
+      host: process.env.DEV_DATABASE_HOST,
+      port: parseInt(process.env.DEV_DATABASE_PORT, 10) || 5432,
+      username: process.env.DEV_DATABASE_USERNAME,
+      password: process.env.DEV_DATABASE_PASSWORD,
     },
     production: {
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
+      host: process.env.PROD_DATABASE_HOST,
+      port: parseInt(process.env.PROD_DATABASE_PORT, 10) || 5432,
+      username: process.env.PROD_DATABASE_USERNAME,
+      password: process.env.PROD_DATABASE_PASSWORD,
     },
   },
 });
