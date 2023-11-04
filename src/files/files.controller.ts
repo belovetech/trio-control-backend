@@ -14,6 +14,7 @@ import { v4 as uuid4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { FilesService } from './files.service';
+import { Multer } from './files.interface';
 
 import { Roles } from '../auth/decorators/role.decorator';
 import { Role } from '../auth/enums/role.enum';
@@ -43,7 +44,7 @@ export class FilesController {
         validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
       }),
     )
-    file: unknown,
+    file: Multer,
   ) {
     return await this.filesService.upload(id, file);
   }

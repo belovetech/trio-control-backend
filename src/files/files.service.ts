@@ -5,7 +5,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Company } from '../companies/entities';
-import { FileResponse } from './files.interface';
+import { FileResponse, Multer } from './files.interface';
 
 @Injectable()
 export class FilesService {
@@ -14,7 +14,7 @@ export class FilesService {
     private companyRepository: Repository<Company>,
   ) {}
 
-  async upload(id: string, file: unknown): Promise<FileResponse> {
+  async upload(id: string, file: Multer): Promise<FileResponse> {
     const company = await this.companyRepository.findOneBy({ id });
 
     if (!company) {
