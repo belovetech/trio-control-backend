@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 export class UpdateCompanyDto {
   @IsOptional()
@@ -9,11 +9,11 @@ export class UpdateCompanyDto {
 
   @IsOptional()
   @ApiProperty({ example: 20 })
-  @IsNumber()
+  @IsString()
   public total_users: number;
 
   @IsOptional()
   @ApiProperty({ example: 5 })
-  @IsNumber()
+  @IsString()
   public total_products: number;
 }

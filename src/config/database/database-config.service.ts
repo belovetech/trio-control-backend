@@ -8,7 +8,6 @@ export class DatabaseConfigService {
   static getDatabaseConfig(configService: ConfigService): TypeOrmModuleOptions {
     const nodeEnv = configService.get('node_env');
     const databaseConfig = configService.get('databaseConfig');
-    console.log(nodeEnv);
 
     const commonOptions: TypeOrmModuleOptions = {
       type: 'postgres',
