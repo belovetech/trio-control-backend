@@ -17,6 +17,7 @@ export default () => ({
       username: process.env.PROD_DATABASE_USERNAME,
       password: process.env.PROD_DATABASE_PASSWORD,
       connectString: process.env.DATABASE_URL,
+      database: process.env.PROD_DATABASE_NAME,
     },
   },
 });

@@ -30,13 +30,15 @@ export class DatabaseConfigService {
       connectionOptions = {
         ...connectionOptions,
         ...databaseConfig.production,
-        // synchronize: true,
-        // migrationsRun: true,
+        synchronize: true,
+        migrationsRun: true,
         ssl: {
           rejectUnauthorized: false,
         },
       };
     }
+
+    console.log(connectionOptions);
 
     return connectionOptions;
   }
