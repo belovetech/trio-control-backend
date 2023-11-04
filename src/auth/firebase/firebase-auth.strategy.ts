@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
 import * as firebase from 'firebase-admin';
-import firebase_params from './configuration';
+import firebase_params from '../firebase/firebase.params';
 
 import { Role } from '../enums/role.enum';
 
@@ -19,7 +19,7 @@ export class FirebaseAuthStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
     this.defaultApp = firebase.initializeApp({
-      credential: firebase.credential.cert(firebase_params),
+      credential: firebase.credential.cert(firebase_params(configService)),
     });
   }
   async validate(token: string) {
