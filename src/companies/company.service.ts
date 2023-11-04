@@ -27,11 +27,11 @@ export class CompanyService {
     const { company_name, total_products, total_users } = data;
 
     const companyExists = await this.companyRepository.findOne({
-      where: { user_id, company_name },
+      where: { user_id },
     });
 
     if (companyExists) {
-      throw new ConflictException('Company already exists');
+      throw new ConflictException('User already created company');
     }
 
     const company = this.companyRepository.create({
