@@ -30,7 +30,6 @@ export class DatabaseConfigService {
       connectionOptions = {
         ...connectionOptions,
         ...databaseConfig.production,
-        synchronize: true,
         ssl: {
           rejectUnauthorized: false,
         },
