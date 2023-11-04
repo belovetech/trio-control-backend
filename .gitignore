@@ -38,4 +38,4 @@ lerna-debug.log*
 # firebase
 */**/firebase.config.json
 .users.ts
-.env
+.env*
