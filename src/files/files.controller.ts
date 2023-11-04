@@ -30,6 +30,8 @@ const storage = diskStorage({
   },
 });
 
+const fileTypesRegex = /^image\/(png|webp|jpeg)$/;
+
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
@@ -41,7 +43,7 @@ export class FilesController {
     @Param('id') id: string,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
+        validators: [new FileTypeValidator({ fileType: fileTypesRegex })],
       }),
     )
     file: Multer,
