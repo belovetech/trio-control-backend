@@ -14,7 +14,7 @@ export class FilesService {
     private companyRepository: Repository<Company>,
   ) {}
 
-  async upload(id: string, file: Express.Multer.File): Promise<FileResponse> {
+  async upload(id: string, file: unknown): Promise<FileResponse> {
     const company = await this.companyRepository.findOneBy({ id });
 
     if (!company) {

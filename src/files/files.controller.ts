@@ -43,7 +43,7 @@ export class FilesController {
         validators: [new FileTypeValidator({ fileType: 'image/jpeg' })],
       }),
     )
-    file: Express.Multer.File,
+    file: unknown,
   ) {
     return await this.filesService.upload(id, file);
   }
